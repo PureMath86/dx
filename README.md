@@ -2,7 +2,7 @@
 
 pip install pandas-datareader
 
-pip install git+git://github.com/yhilpisch/dx.git
+pip install git+git://github.com/PureMath86/dx.git
 
 # DX Analytics
 
