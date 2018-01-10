@@ -2,7 +2,9 @@
 
 from distutils.core import setup
 
-setup(name='DX-Analytics',
+DISTNAME = 'dx'
+
+setup(name=DISTNAME,
 		version='0.1',
 		description='DX Analytics',
 		author='Dr. Yves Hilpisch',
