@@ -111,9 +111,9 @@ class mean_variance_portfolio(object):
                 try:
                     if self.source == 'yahoo':
                         source = 'quandl'
-                    elif self.source == 'google':
+                    if self.source == 'google':
                         source = 'yahoo'
-                    elif self.source == 'quandl':
+                    if self.source == 'quandl':
                         source = 'google'
                     self.data[sym] = web.DataReader(sym, source,
                                                     self.start_date,
