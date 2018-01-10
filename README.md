@@ -1,3 +1,8 @@
+## Installation
+
+pip install pandas-datareader
+
+pip install git+git://github.com/yhilpisch/dx.git
 
 # DX Analytics
 
