@@ -28,7 +28,7 @@ from .frame import *
 import scipy.optimize as sco
 import scipy.interpolate as sci
 from pandas_datareader import data as web
-
+# for more info: http://pandas-datareader.readthedocs.io/en/latest/remote_data.html
 
 class mean_variance_portfolio(object):
     '''
@@ -98,7 +98,7 @@ class mean_variance_portfolio(object):
         '''
 
         self.data = pd.DataFrame()
-        # if self.source == 'yahoo' or self.source == 'google':
+        # if self.source == 'yahoo' or 'google' or 'quandl':
         for sym in self.symbols:
             try:
                 self.data[sym] = web.DataReader(sym, self.source,
@@ -110,9 +110,11 @@ class mean_variance_portfolio(object):
                 print('Will try other source.')
                 try:
                     if self.source == 'yahoo':
-                        source = 'google'
-                    if self.source == 'google':
+                        source = 'quandl'
+                    elif self.source == 'google':
                         source = 'yahoo'
+                    elif self.source == 'quandl':
+                        source = 'google'
                     self.data[sym] = web.DataReader(sym, source,
                                                     self.start_date,
                                                     self.final_date)['Close']
