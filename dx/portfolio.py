@@ -98,7 +98,7 @@ class mean_variance_portfolio(object):
         '''
 
         self.data = pd.DataFrame()
-        # if self.source == 'yahoo' or 'google' or 'quandl':
+        # if self.source == 'yahoo' or 'google' or '\':
         for sym in self.symbols:
             try:
                 self.data[sym] = web.DataReader(sym, self.source,
@@ -119,8 +119,22 @@ class mean_variance_portfolio(object):
                                                     self.start_date,
                                                     self.final_date)['Close']
                 except:
-                    msg = 'Can not find data for source %s and symbol %s'
-                    raise IOError(msg % (source, sym))
+                    print('Can not find data for source %s and symbol %s.'
+                          % (self.source, sym))
+                    print('Will try other source.')
+                    try:
+                        if self.source == 'yahoo':
+                            source = 'quandl'
+                        if self.source == 'google':
+                            source = 'yahoo'
+                        if self.source == 'quandl':
+                            source = 'google'
+                        self.data[sym] = web.DataReader(sym, source,
+                                                        self.start_date,
+                                                        self.final_date)['Close']
+                    except:
+                        msg = 'Can not find data for source %s and symbol %s'
+                        raise IOError(msg % (source, sym))
         self.data.columns = self.symbols
         # To do: add more sources
 
