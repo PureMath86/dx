@@ -110,12 +110,12 @@ class mean_variance_portfolio(object):
                 print('Will try other source.')
                 try:
                     if self.source == 'yahoo':
-                        source = 'quandl'
+                        self.source = 'quandl'
                     if self.source == 'google':
-                        source = 'yahoo'
+                        self.source = 'yahoo'
                     if self.source == 'quandl':
-                        source = 'google'
-                    self.data[sym] = web.DataReader(sym, source,
+                        self.source = 'google'
+                    self.data[sym] = web.DataReader(sym, self.source,
                                                     self.start_date,
                                                     self.final_date)['Close']
                 except:
@@ -124,17 +124,17 @@ class mean_variance_portfolio(object):
                     print('Will try other source.')
                     try:
                         if self.source == 'yahoo':
-                            source = 'quandl'
+                            self.source = 'quandl'
                         if self.source == 'google':
-                            source = 'yahoo'
+                            self.source = 'yahoo'
                         if self.source == 'quandl':
-                            source = 'google'
-                        self.data[sym] = web.DataReader(sym, source,
+                            self.source = 'google'
+                        self.data[sym] = web.DataReader(sym, self.source,
                                                         self.start_date,
                                                         self.final_date)['Close']
                     except:
                         msg = 'Can not find data for source %s and symbol %s'
-                        raise IOError(msg % (source, sym))
+                        raise IOError(msg % (self.source, sym))
         self.data.columns = self.symbols
         # To do: add more sources
 
@@ -143,6 +143,10 @@ class mean_variance_portfolio(object):
         Computes returns and variances
         '''
 
+        # Note (on log-return):
+        # log(1+return) = log(1+(end_price-start_price)/start_price) 
+        #               = log(end_price/start_price) 
+        #               = log(end_price) - log(start_price)
         self.raw_returns = np.log(self.data / self.data.shift(1))
         self.mean_raw_return = self.raw_returns.mean()
         self.raw_covariance = self.raw_returns.cov()
@@ -151,7 +155,11 @@ class mean_variance_portfolio(object):
         '''
         Applies weights to the raw returns and covariances
         '''
-
+        
+        # Note (on 252):
+        # The NYSE and NASDAQ average about 252 trading days a year. 
+        # This is from 365.25(days on average per year) * 5/7(proportion work days per week) ~ 261.
+        # 261 - 9(holidays) ~ 252.
         self.returns = self.raw_returns * self.weights
         self.mean_returns = self.returns.mean() * 252
         self.portfolio_return = np.sum(self.mean_returns)
@@ -174,8 +182,7 @@ class mean_variance_portfolio(object):
          '''
         weights = np.array(weights)
         portfolio_return = np.sum(self.raw_returns.mean() * weights) * 252
-        portfolio_vol = math.sqrt(
-            np.dot(weights.T, np.dot(self.raw_covariance * 252, weights)))
+        portfolio_vol = math.sqrt(np.dot(weights.T, np.dot(self.raw_covariance * 252, weights)))
 
         return np.array([portfolio_return, portfolio_vol,
                          portfolio_return / portfolio_vol])
